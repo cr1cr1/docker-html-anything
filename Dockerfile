@@ -8,20 +8,18 @@ RUN bun install
 
 FROM oven/bun:1-slim AS runner
 RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates \
- && rm -rf /var/lib/apt/lists/* \
- && groupadd -g 1000 appgroup \
- && useradd -u 1000 -g appgroup -m -s /bin/bash appuser
+ && rm -rf /var/lib/apt/lists/* && id 1000
 
-USER appuser
-ENV PATH="/home/appuser/.local/share/mise/shims:/home/appuser/.local/bin:${PATH}"
+USER bun
+ENV PATH="/home/bun/.local/share/mise/shims:/home/bun/.local/bin:${PATH}"
 WORKDIR /app/html-anything
 
 RUN curl https://mise.run | sh
 
 # Copy full repo from builder (source + node_modules required for dev server)
-COPY --chown=appuser:appgroup --from=builder /app/html-anything/ /app/html-anything/
+COPY --chown=bun:bun --from=builder /app/html-anything/ /app/html-anything/
 # Copy mise config and install opencode + pi
-COPY --chown=appuser:appgroup mise.toml /app/html-anything/mise.toml
+COPY --chown=bun:bun mise.toml /app/html-anything/mise.toml
 RUN mise trust /app/html-anything/mise.toml && mise up
 # Pre-generate next-env.d.ts so Next.js dev server doesn't try to write into the read-only rootfs
 RUN printf '%s\n' '/// <reference types="next" />' '/// <reference types="next/image-types/global" />' > /app/html-anything/next/next-env.d.ts
