@@ -12,22 +12,39 @@ spec:
       labels:
         app: html-anything
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
-        - name: app
+        - name: html-anything
           image: html-anything
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
           envFrom:
             - secretRef:
                 name: ai-keys
           volumeMounts:
             - name: opencode-config
-              mountPath: /root/.opencode/opencode.json
-              subPath: opencode.json
+              mountPath: /home/appuser/.opencode/opencode.jsonc
+              subPath: opencode.jsonc
             - name: pi-config
-              mountPath: /root/.pi/agent/models.json
+              mountPath: /home/appuser/.pi/agent/models.json
               subPath: models.json
+            - name: tmp
+              mountPath: /tmp
+            - name: next-cache
+              mountPath: /app/html-anything/.next
           livenessProbe:
             httpGet:
               path: /
@@ -54,3 +71,7 @@ spec:
         - name: pi-config
           configMap:
             name: pi-config
+        - name: tmp
+          emptyDir: {}
+        - name: next-cache
+          emptyDir: {}
