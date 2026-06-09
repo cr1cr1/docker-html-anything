@@ -27,9 +27,9 @@ spec:
         - -cx
         args:
         - |
-          mkdir -p /workspace/pi/agent /workspace/opencode && \\
-          cp -v /config/pi/models.json /workspace/pi/agent/models.json && \\
-          cp -v /config/pi/pi-settings.json /workspace/pi/agent/settings.json && \\
+          mkdir -p /workspace/pi/agent /workspace/opencode && \
+          cp -v /config/pi/models.json /workspace/pi/agent/models.json && \
+          cp -v /config/pi/settings.json /workspace/pi/agent/settings.json && \
           cp -v /config/opencode/opencode.jsonc /workspace/opencode/opencode.jsonc
         securityContext:
           allowPrivilegeEscalation: false
