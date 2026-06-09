@@ -36,15 +36,15 @@ spec:
                 name: ai-keys
           volumeMounts:
             - name: opencode-config
-              mountPath: /home/appuser/.opencode/opencode.jsonc
+              mountPath: /home/bun/.opencode/opencode.jsonc
               subPath: opencode.jsonc
             - name: pi-config
-              mountPath: /home/appuser/.pi/agent/models.json
+              mountPath: /home/bun/.pi/agent/models.json
               subPath: models.json
             - name: tmp
               mountPath: /tmp
             - name: next-cache
-              mountPath: /app/html-anything/next
+              mountPath: /app/html-anything/next/.next
           livenessProbe:
             httpGet:
               path: /
