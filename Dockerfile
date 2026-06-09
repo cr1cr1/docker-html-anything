@@ -23,6 +23,8 @@ COPY --chown=appuser:appgroup --from=builder /app/html-anything/ /app/html-anyth
 # Copy mise config and install opencode + pi
 COPY --chown=appuser:appgroup mise.toml /app/html-anything/mise.toml
 RUN mise trust /app/html-anything/mise.toml && mise up
+# Pre-generate next-env.d.ts so Next.js dev server doesn't try to write into the read-only rootfs
+RUN printf '%s\n' '/// <reference types="next" />' '/// <reference types="next/image-types/global" />' > /app/html-anything/next/next-env.d.ts
 EXPOSE 3000
 ENV PORT=3000
 CMD ["bun", "-F", "@html-anything/next", "dev", "--", "--hostname", "0.0.0.0"]

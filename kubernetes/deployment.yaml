@@ -44,7 +44,7 @@ spec:
             - name: tmp
               mountPath: /tmp
             - name: next-cache
-              mountPath: /app/html-anything/.next
+              mountPath: /app/html-anything/next
           livenessProbe:
             httpGet:
               path: /
@@ -59,11 +59,11 @@ spec:
             periodSeconds: 5
           resources:
             requests:
-              cpu: 100m
-              memory: 256Mi
+              cpu: "100m"
+              memory: "256Mi"
             limits:
-              cpu: 1
-              memory: 512Mi
+              cpu: "1"
+              memory: "512Mi"
       volumes:
         - name: opencode-config
           configMap:
