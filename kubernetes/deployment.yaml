@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: html-anything
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: html-anything
+  template:
+    metadata:
+      labels:
+        app: html-anything
+    spec:
+      containers:
+        - name: app
+          image: html-anything
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - secretRef:
+                name: ai-keys
+          volumeMounts:
+            - name: opencode-config
+              mountPath: /root/.opencode/opencode.json
+              subPath: opencode.json
+            - name: pi-config
+              mountPath: /root/.pi/agent/models.json
+              subPath: models.json
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1
+              memory: 512Mi
+      volumes:
+        - name: opencode-config
+          configMap:
+            name: opencode-config
+        - name: pi-config
+          configMap:
+            name: pi-config

@@ -1,0 +1,20 @@
+{
+  "providers": {
+    "openai": {
+      "baseUrl": "https://api.openai.com/v1",
+      "api": "openai-completions",
+      "apiKey": "{env:OPENAI_API_KEY}",
+      "models": [
+        { "id": "gpt-5" }
+      ]
+    },
+    "anthropic": {
+      "baseUrl": "https://api.anthropic.com",
+      "api": "anthropic-messages",
+      "apiKey": "{env:ANTHROPIC_API_KEY}",
+      "models": [
+        { "id": "claude-sonnet-4-5-20250929" }
+      ]
+    }
+  }
+}

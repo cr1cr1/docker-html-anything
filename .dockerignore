@@ -1,0 +1,8 @@
+node_modules
+.next
+*.log
+.git
+.github
+docs
+e2e
+scripts

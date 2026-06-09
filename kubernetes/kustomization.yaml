@@ -1,0 +1,32 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: html-anything
+
+configMapGenerator:
+  - name: opencode-config
+    files:
+      - opencode.json
+  - name: pi-config
+    files:
+      - models.json
+
+secretGenerator: []
+# If you prefer env-based secrets, create .env.secret and uncomment:
+#  - name: ai-keys
+#    envs:
+#      - .env.secret
+
+images:
+  - name: html-anything
+    newName: ghcr.io/cr1cr1/docker-html-anything
+    newTag: latest
+
+resources:
+  - namespace.yaml
+  - deployment.yaml
+  - service.yaml
+  - secret.yaml
+  # - ingress.yaml
+  # - gateway.yaml
+  # - httproute.yaml
