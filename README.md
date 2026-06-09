@@ -174,7 +174,7 @@ To use opencode inside the container, mount your config and pass env vars:
 docker run -d \
   --name ha \
   -p 3007:3000 \
-  -v "$HOME/.opencode:/home/appuser/.opencode" \
+  -v "$HOME/.opencode:/home/bun/.opencode" \
   -e ANTHROPIC_API_KEY \
   -e OPENAI_API_KEY \
   -e MOONSHOT_API_KEY \
@@ -192,7 +192,7 @@ To use pi inside the container, mount your config and pass env vars:
 docker run -d \
   --name ha \
   -p 3007:3000 \
-  -v "$HOME/.pi:/home/appuser/.pi" \
+  -v "$HOME/.pi:/home/bun/.pi" \
   -e ANTHROPIC_API_KEY \
   -e OPENAI_API_KEY \
   -e MOONSHOT_API_KEY \
