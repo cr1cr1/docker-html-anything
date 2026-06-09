@@ -4,8 +4,8 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates && rm -rf /var/lib/apt/lists/*
 RUN git clone --depth 1 https://github.com/nexu-io/html-anything.git /app/html-anything
 WORKDIR /app/html-anything
-ENV NODE_ENV=production
-RUN bun install && bun -F @html-anything/next build
+RUN bun install
+RUN NODE_ENV=production bun -F @html-anything/next build
 FROM oven/bun:1-slim AS runner
 RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates \
  && rm -rf /var/lib/apt/lists/*
@@ -20,7 +20,9 @@ RUN curl https://mise.run | sh
 COPY --chown=bun:bun --from=builder /app/html-anything/ /app/html-anything/
 # Copy mise config and install opencode + pi
 COPY --chown=bun:bun mise.toml /app/html-anything/mise.toml
-RUN mise trust /app/html-anything/mise.toml && mise up
+RUN mise trust /app/html-anything/mise.toml && mise up && \
+    ln -sf /home/bun/.local/share/opencode/ /tmp/opencode && \
+    ln -sf /home/bun/.pi/agent/sessions/ /tmp/pi-sessions
 EXPOSE 3000
 ENV PORT=3000
 CMD ["bun", "-F", "@html-anything/next", "start", "--", "--hostname", "0.0.0.0"]
