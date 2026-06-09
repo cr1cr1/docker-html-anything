@@ -12,6 +12,18 @@
         "apiKey": "{env:OPENAI_API_KEY}",
         "baseURL": "https://api.openai.com/v1"
       }
+    },
+    "moonshot": {
+      "options": {
+        "apiKey": "{env:MOONSHOT_API_KEY}",
+        "baseURL": "https://api.moonshot.ai/v1"
+      }
+    },
+    "zai": {
+      "options": {
+        "apiKey": "{env:ZAI_API_KEY}",
+        "baseURL": "https://api.z.ai/api/coding/paas/v4"
+      }
     }
   }
 }

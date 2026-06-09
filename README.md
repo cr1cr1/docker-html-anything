@@ -17,10 +17,10 @@ Daily container build for the [`html-anything`](https://github.com/nexu-io/html-
 | `mise.toml` | Mise tool versions (`opencode`, `pi`) |
 | `.dockerignore` | Keeps the build context small |
 | `.github/workflows/daily-container.yml` | Daily cron + manual trigger workflow |
-| `mise-tasks/build` | Build the image locally (`#MISE description`) |
-| `mise-tasks/test` | Build, run, health-check, and verify tools (`#MISE description`) |
-| `mise-tasks/run` | Run the container locally for development (`#MISE description`) |
-| `mise-tasks/stop` | Stop and remove the local container (`#MISE description`) |
+| `mise-tasks/build` | Build the image locally |
+| `mise-tasks/test` | Build, run, health-check, and verify tools |
+| `mise-tasks/run` | Run the container locally for development |
+| `mise-tasks/stop` | Stop and remove the local container |
 
 ## Local development
 
@@ -156,34 +156,16 @@ opencode reads `~/.opencode/opencode.json` (global) or `./opencode.json` (projec
 # Set keys in your shell (or .env file)
 export ANTHROPIC_API_KEY=sk-ant-...
 export OPENAI_API_KEY=sk-...
+export MOONSHOT_API_KEY=sk-moonshot-...
+export ZAI_API_KEY=...
 ```
 
-Example `opencode.json`:
-
-```json
-{
-  "$schema": "https://opencode.ai/config.json",
-  "provider": {
-    "anthropic": {
-      "options": {
-        "apiKey": "{env:ANTHROPIC_API_KEY}",
-        "timeout": 600000
-      }
-    },
-    "openai": {
-      "options": {
-        "apiKey": "{env:OPENAI_API_KEY}",
-        "baseURL": "https://api.openai.com/v1"
-      }
-    }
-  }
-}
-```
+See [opencode.jsonc](kubernetes/opencode.jsonc) for an example with multiple providers. Use the `{env:VAR_NAME}` syntax for secrets:
 
 Switch models interactively with `/models` or via CLI:
 
 ```bash
-opencode run "Explain this code" --model anthropic/claude-sonnet-4-5
+opencode run "Explain this code" --model anthropic/claude-sonnet-4-6
 ```
 
 To use opencode inside the container, mount your config and pass env vars:
@@ -192,38 +174,17 @@ To use opencode inside the container, mount your config and pass env vars:
 docker run -d \
   --name ha \
   -p 3007:3000 \
-  -v "$HOME/.opencode:/root/.opencode" \
+  -v "$HOME/.opencode:/home/appuser/.opencode" \
   -e ANTHROPIC_API_KEY \
   -e OPENAI_API_KEY \
+  -e MOONSHOT_API_KEY \
+  -e ZAI_API_KEY \
   html-anything:latest
 ```
 
 #### pi
 
-pi reads `~/.pi/agent/models.json`. Add providers under the `providers` key:
-
-```json
-{
-  "providers": {
-    "openai": {
-      "baseUrl": "https://api.openai.com/v1",
-      "api": "openai-completions",
-      "apiKey": "{env:OPENAI_API_KEY}",
-      "models": [
-        { "id": "gpt-5" }
-      ]
-    },
-    "anthropic": {
-      "baseUrl": "https://api.anthropic.com",
-      "api": "anthropic-messages",
-      "apiKey": "{env:ANTHROPIC_API_KEY}",
-      "models": [
-        { "id": "claude-sonnet-4-5-20250929" }
-      ]
-    }
-  }
-}
-```
+pi reads `~/.pi/agent/models.json`. See [models.json](kubernetes/models.json) for an example with multiple providers. Use the `{env:VAR_NAME}` syntax for secrets:
 
 To use pi inside the container, mount your config and pass env vars:
 
@@ -231,9 +192,11 @@ To use pi inside the container, mount your config and pass env vars:
 docker run -d \
   --name ha \
   -p 3007:3000 \
-  -v "$HOME/.pi:/root/.pi" \
+  -v "$HOME/.pi:/home/appuser/.pi" \
   -e ANTHROPIC_API_KEY \
   -e OPENAI_API_KEY \
+  -e MOONSHOT_API_KEY \
+  -e ZAI_API_KEY \
   html-anything:latest
 ```
 

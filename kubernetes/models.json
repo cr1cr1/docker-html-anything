@@ -13,7 +13,23 @@
       "api": "anthropic-messages",
       "apiKey": "{env:ANTHROPIC_API_KEY}",
       "models": [
-        { "id": "claude-sonnet-4-5-20250929" }
+        { "id": "claude-sonnet-4-6" }
+      ]
+    },
+    "moonshot": {
+      "baseUrl": "https://api.moonshot.ai/v1",
+      "api": "openai-completions",
+      "apiKey": "{env:MOONSHOT_API_KEY}",
+      "models": [
+        { "id": "kimi-k2.6" }
+      ]
+    },
+    "zai": {
+      "baseUrl": "https://api.z.ai/api/coding/paas/v4",
+      "api": "openai-completions",
+      "apiKey": "{env:ZAI_API_KEY}",
+      "models": [
+        { "id": "glm-5.1" }
       ]
     }
   }
