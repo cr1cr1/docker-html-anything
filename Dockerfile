@@ -5,6 +5,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends git ca-certific
 RUN git clone --depth 1 https://github.com/nexu-io/html-anything.git /app/html-anything
 WORKDIR /app/html-anything
 RUN bun install
+# Patch agent invocation to also emit stderr to container logs (not just SSE)
+RUN sed -i 's/safeEnqueue({ type: "stderr", text: chunk });/safeEnqueue({ type: "stderr", text: chunk }); console.error(`[agent-stderr] ${chunk}`);/' next/src/lib/agents/invoke.ts
 RUN NODE_ENV=production bun -F @html-anything/next build
 FROM oven/bun:1-slim AS runner
 RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates \
