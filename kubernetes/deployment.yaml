@@ -19,59 +19,120 @@ spec:
         fsGroup: 1000
         seccompProfile:
           type: RuntimeDefault
-      containers:
-        - name: html-anything
-          image: html-anything
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 3000
-          securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
-            capabilities:
-              drop:
-                - ALL
-          envFrom:
-            - secretRef:
-                name: ai-keys
-          volumeMounts:
-            - name: opencode-config
-              mountPath: /home/bun/.opencode/opencode.jsonc
-              subPath: opencode.jsonc
-            - name: pi-config
-              mountPath: /home/bun/.pi/agent/models.json
-              subPath: models.json
-            - name: tmp
-              mountPath: /tmp
-            - name: next-cache
-              mountPath: /app/html-anything/next/.next
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 3000
-            initialDelaySeconds: 30
-            periodSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 3000
-            initialDelaySeconds: 10
-            periodSeconds: 5
-          resources:
-            requests:
-              cpu: "100m"
-              memory: "256Mi"
-            limits:
-              cpu: "1"
-              memory: "512Mi"
-      volumes:
-        - name: opencode-config
-          configMap:
-            name: opencode-config
+      initContainers:
+      - name: copy-configs
+        image: busybox:1.37
+        command:
+        - sh
+        - -cx
+        args:
+        - |
+          mkdir -p /workspace/pi/agent /workspace/opencode && \\
+          cp -v /config/pi/models.json /workspace/pi/agent/models.json && \\
+          cp -v /config/pi/pi-settings.json /workspace/pi/agent/settings.json && \\
+          cp -v /config/opencode/opencode.jsonc /workspace/opencode/opencode.jsonc
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        volumeMounts:
         - name: pi-config
-          configMap:
-            name: pi-config
+          mountPath: /config/pi
+        - name: opencode-config
+          mountPath: /config/opencode
+        - name: pi-data
+          mountPath: /workspace/pi
+        - name: opencode-home
+          mountPath: /workspace/opencode
+        resources:
+          requests:
+            cpu: 10m
+            memory: 16Mi
+          limits:
+            cpu: 100m
+            memory: 32Mi
+      containers:
+      - name: html-anything
+        image: html-anything
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        env:
+        - name: HTML_ANYTHING_ALLOW_ANY_HOST
+          value: "1"
+        envFrom:
+        - secretRef:
+            name: ai-keys
+        volumeMounts:
+        - name: pi-data
+          mountPath: /home/bun/.pi
+        - name: opencode-home
+          mountPath: /home/bun/.opencode
+        - name: opencode-share
+          mountPath: /home/bun/.local/share/opencode
+        - name: opencode-state
+          mountPath: /home/bun/.local/state/opencode
+        - name: opencode-cache
+          mountPath: /home/bun/.cache/opencode
+        - name: dot-config
+          mountPath: /home/bun/.config
         - name: tmp
-          emptyDir: {}
-        - name: next-cache
-          emptyDir: {}
+          mountPath: /tmp
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          timeoutSeconds: 5
+        startupProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 18
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+          limits:
+            cpu: "1"
+            memory: "2Gi"
+      volumes:
+      - name: opencode-config
+        configMap:
+          name: opencode-config
+      - name: pi-config
+        configMap:
+          name: pi-config
+      - name: pi-data
+        emptyDir: {}
+      - name: opencode-home
+        emptyDir: {}
+      - name: opencode-share
+        emptyDir: {}
+      - name: opencode-state
+        emptyDir: {}
+      - name: opencode-cache
+        emptyDir: {}
+      - name: dot-config
+        emptyDir: {}
+      - name: tmp
+        emptyDir: {}

@@ -9,7 +9,8 @@ configMapGenerator:
       - opencode.jsonc
   - name: pi-config
     files:
-      - models.json
+      - pi/models.json
+      - pi/settings.json
 
 secretGenerator: []
 # If you prefer env-based secrets, create .env.secret and uncomment:
