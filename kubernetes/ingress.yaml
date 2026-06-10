@@ -3,6 +3,7 @@ kind: Ingress
 metadata:
   name: &name html-anything
   # annotations:
+  #   haproxy-ingress.github.io/backend-protocol: h2
   #   cert-manager.io/cluster-issuer: issuer-name
   #   external-dns.alpha.kubernetes.io/target: example.com
 spec:
