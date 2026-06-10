@@ -69,7 +69,7 @@ spec:
         - name: HTML_ANYTHING_ALLOW_ANY_HOST
           value: "1"
         - name: HOME
-          value: "/home/node"
+          value: "/home/bun"
         - name: NODE_ENV
           value: "production"
         envFrom:
@@ -77,17 +77,17 @@ spec:
             name: ai-keys
         volumeMounts:
         - name: pi-data
-          mountPath: /home/node/.pi
+          mountPath: /home/bun/.pi
         - name: opencode-home
-          mountPath: /home/node/.opencode
+          mountPath: /home/bun/.opencode
         - name: opencode-share
-          mountPath: /home/node/.local/share/opencode
+          mountPath: /home/bun/.local/share/opencode
         - name: opencode-state
-          mountPath: /home/node/.local/state/opencode
+          mountPath: /home/bun/.local/state/opencode
         - name: opencode-cache
-          mountPath: /home/node/.cache/opencode
+          mountPath: /home/bun/.cache/opencode
         - name: dot-config
-          mountPath: /home/node/.config
+          mountPath: /home/bun/.config
         - name: tmp
           mountPath: /tmp
         livenessProbe:
