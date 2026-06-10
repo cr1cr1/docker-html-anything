@@ -1,23 +1,22 @@
 # syntax=docker/dockerfile:1
 FROM oven/bun:1-slim AS builder
 WORKDIR /app
-RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates python3 && rm -rf /var/lib/apt/lists/*
 RUN git clone --depth 1 https://github.com/nexu-io/html-anything.git /app/html-anything
 WORKDIR /app/html-anything
 RUN bun install
-# Patch agent invocation to also emit stderr to container logs (not just SSE)
-RUN sed -i 's/safeEnqueue({ type: "stderr", text: chunk });/safeEnqueue({ type: "stderr", text: chunk }); console.error(`[agent-stderr] ${chunk}`);/' next/src/lib/agents/invoke.ts
+# Patch agent invocation for detailed container logging (stdout, stderr, start, exit)
+COPY scripts/patch-invoke-logging.py /tmp/patch-invoke-logging.py
+RUN python3 /tmp/patch-invoke-logging.py
 RUN NODE_ENV=production bun -F @html-anything/next build
+
 FROM oven/bun:1-slim AS runner
 RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates \
  && rm -rf /var/lib/apt/lists/*
-
 USER bun
 ENV PATH="/home/bun/.local/share/mise/shims:/home/bun/.local/bin:${PATH}"
 WORKDIR /app/html-anything
-
 RUN curl https://mise.run | sh
-
 # Copy full repo from builder (source + node_modules required for server)
 COPY --chown=bun:bun --from=builder /app/html-anything/ /app/html-anything/
 # Copy mise config and install opencode + pi
