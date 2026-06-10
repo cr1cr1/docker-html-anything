@@ -6,7 +6,7 @@ namespace: html-anything
 configMapGenerator:
   - name: opencode-config
     files:
-      - opencode.jsonc
+      - opencode/opencode.jsonc
   - name: pi-config
     files:
       - pi/models.json
