@@ -32,4 +32,8 @@ echo "=== Verifying mise tools ==="
 docker exec "${NAME}" opencode --version
 docker exec "${NAME}" pi --version
 
+echo "=== Checking harness startup logs ==="
+docker logs "${NAME}" > /tmp/ha-logs.txt 2>&1
+grep -q '\[harness\]' /tmp/ha-logs.txt
+echo "Harness startup logs present"
 echo "=== All checks passed ==="

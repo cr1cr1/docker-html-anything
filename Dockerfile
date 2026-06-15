@@ -19,6 +19,7 @@ COPY --chown=bun:bun --from=builder /app/html-anything/ /app/html-anything/
 # Copy mise config and install opencode + pi
 COPY --chown=bun:bun mise.toml /app/html-anything/mise.toml
 RUN mise trust /app/html-anything/mise.toml && mise up
+COPY --chown=bun:bun harness-starter.ts /app/html-anything/harness-starter.ts
 EXPOSE 3000
 ENV PORT=3000
-CMD ["bun", "-F", "@html-anything/next", "start", "--", "--hostname", "0.0.0.0"]
+CMD ["bun", "--preload", "./harness-starter.ts", "/app/html-anything/next/node_modules/next/dist/bin/next", "start", "--hostname", "0.0.0.0"]

@@ -206,3 +206,4 @@ For local models (Ollama, LM Studio, llama.cpp), use the OpenAI-compatible adapt
 
 - Uses `oven/bun:1-slim` (Debian-based) because mise-installed GitHub release binaries are linked against glibc, not musl.
 - The `--hostname 0.0.0.0` flag is required; without it Next.js binds to `localhost` inside the container and is unreachable from the host.
+- Container logs include `[harness]` prefixed startup diagnostics (tool versions and PATH) and per-conversion harness stdout/stderr output.
